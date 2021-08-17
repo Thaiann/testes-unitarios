@@ -1,6 +1,9 @@
 package servicos;
 
 
+import static buiders.FilmeBuilder.umFilme;
+import static buiders.FilmeBuilder.umFilmeSemEstoque;
+import static buiders.UsuarioBuilder.umUsuario;
 import static matchers.MatchersProprios.caiNumaSegunda;
 import static matchers.MatchersProprios.ehHoje;
 import static matchers.MatchersProprios.ehHojeComDiferencaDias;
@@ -22,6 +25,9 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
+import buiders.FilmeBuilder;
+import buiders.UsuarioBuilder;
+import buildermaster.BuilderMaster;
 import entidades.Filme;
 import entidades.Locacao;
 import entidades.Usuario;
@@ -47,9 +53,10 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveAlugarFilme() throws Exception {
 		assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+		
 		//cenario
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 5.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
 		
 		//açao
 		Locacao locacao = service.alugarFilme(usuario, filmes);
@@ -63,8 +70,8 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemLocacaoException.class)
 	public void naoDeveAlugarFilmeSemEstoque() throws Exception {
 		//cenario
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilmeSemEstoque().agora());
 				
 		//açao
 		service.alugarFilme(usuario, filmes);
@@ -73,7 +80,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void naoDeveAlugarFilmeSemUsuario() throws FilmeSemLocacaoException {
 		//cenario
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 5.0));
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		//acao
 			try {
@@ -87,7 +94,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void naoDeveAlugarFilmeSemFilme() throws FilmeSemLocacaoException, LocadoraException {
 		//cenario
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = umUsuario().agora();
 		
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Filme vazio");
@@ -102,13 +109,17 @@ public class LocacaoServiceTest {
 		assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 		
 		//cenario
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 5.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		//acao
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		//verificacao
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
+	}
+	
+	public static void main(String[] args) {
+		new BuilderMaster().gerarCodigoClasse(Locacao.class);
 	}
 }
