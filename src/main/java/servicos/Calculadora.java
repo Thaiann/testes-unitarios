@@ -5,7 +5,7 @@ import exceptions.NaoPodeDividirPorZeroException;
 public class Calculadora {
 
 	public int somar(int a, int b) {
-		System.out.println("Estou executando o mÃ©todo somar");
+		System.out.println("Estou executando o método somar");
 		return a + b;
 	}
 
